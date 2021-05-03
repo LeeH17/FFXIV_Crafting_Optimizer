@@ -1,0 +1,60 @@
+FFXIV Crafting Optimizer:
+
+-Each step/skill used = node, find optimal path to craft complete/max hq?
+-find calculation for how effective skill will be given materials?
+
+-breadth first, maximize progress, then quality?
+	-end nodes: dur = 0 or prog = 100%
+	-priority queue: pick highest quality reached before failure?
+		-alt: pick highest progress/total, then re-sort by quality, cp needed?, num steps
+	-BFS: best route, DFS = quickest route find?
+
+-known chunks/gains? Shorthand a combo set of abilities?
+	-if durability damage = 0, add following steps to queue too, prioritize?
+
+-possibility space: n skills, m times?
+	-graph algorithm, maximizing values? shortest path?
+	-bellman ford/ depth first search, but goal is a node w/ complete result?
+	-action = node, edges = all skills?
+	-weights: progress
+	:::: https://cs.stackexchange.com/questions/298/graph-searching-breadth-first-vs-depth-first
+		-# skills = branching factor, max number actions = height, Optimal # actions = depth
+		-breadth first is optimal between the two?
+-possibility space: split into min/max possibles, else to 
+
+-nope, tree traversal, visit every node once
+	-monte carlo tree search is below? fitness values to prioritize order?
+	-traversing infinite trees? use threading/morris traversal?
+	-use minimax tree traversal?
+	-Alpha-beta pruning: stop when durability == 0?
+	-iterative deepening depth-first search?
+
+-monte carlo version:
+	-https://ffxiv-beta.lokyst.net/index.html#/solver
+	-https://github.com/doxxx/ffxiv-craft-opt-web
+
+# Action DURability    CP   QUAlity      PRoGress    InnerQuiet   CTL  QINC  BPRG  BQUA   WAC       Cond   S/F
+
+
+
+-Preference options:
+	-guaranteed success, max hq%
+	-max hq% while still succeeding, with given change?
+
+Stretch:
+-Auto updating skills according to xiv database?
+-exporting to script
+-min craftsmanship/cp needed?
+
+
+
+
+
+Alternate ideas:
+-gathering time cost calculator?
+-discord integration for timers/garden?
+-cleaning up bag space? inventory api?
+
+
+
+
