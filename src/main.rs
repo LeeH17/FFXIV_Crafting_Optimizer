@@ -5,7 +5,7 @@
 
 
 //use std::ptr;
-use trees::tr;
+use trees::{tr, TreeWalk};
 
 //Struct representing a node
 struct Node{
@@ -23,7 +23,7 @@ struct Node{
 	progress_max: i16,
 	progress_min: i16,*/
 
-	child_nodes: Vec<Node>,
+	//child_nodes: Option<Vec<Node>>,
 }
 
 impl PartialEq for Node {
@@ -37,18 +37,95 @@ const MAX_DEPTH: i16 = 300;
 /*
 const NULL_NODE: Node = Node{
 	test_id: -1,
-	is_Goal: false,
+	is_goal: false,
 	child_nodes: vec![],
 };*/
 
 
 fn main() {
-    println!("Hello, world!");
+    println!("\n-------------");
+    println!("Run Start");
+    println!("-------------\n");
+
+    //Testing tree setup and printing
+    let forest = tr(0) /-(tr(1) /tr(2)/tr(3) ) /-( tr(4) /tr(5)/tr(6));
+    println!("{}", forest.to_string());
+
+
+    //Set up a node
+    let mut nodes = tr(Node {
+    	test_id: 0,
+    	is_goal: false,
+    	//child_nodes: None,
+    });
+
+    nodes.push_back(tr(Node {
+    	test_id: 1,
+    	is_goal: false,
+    	//child_nodes: None,
+    }));
+
+    nodes.push_back(tr(Node {
+    	test_id: 2,
+    	is_goal: false,
+    	//child_nodes: None,
+    }));
+
+    //println!("{}", nodes.data().test_id);
+    /*let mut iter = nodes.iter_mut();
+    
+    iter.next().unwrap().push_back(tr(Node {
+    	test_id: 3,
+    	is_goal: false,
+    	//child_nodes: None,
+    })); */
+
+    //println!("{}", nodes.to_string());
+
+    //let mut walk = TreeWalk::from( nodes );
+
+    let mut iter = nodes.iter_mut().peekable();
+
+    loop {
+
+    	let current = iter.next();
+
+    	if current == None {
+    		break;
+    	}
+
+    	let mut current_data = current.unwrap();
+
+    	println!("{}", current_data.data().test_id);
+
+    	current_data.push_back(tr(Node {
+    		test_id: 3,
+    		is_goal: false
+    	}));
+    }
+
+    println!("\nEND\n");
+
+    /*
+    println!("{}", iter.peek().unwrap().data().test_id);
+    iter.next().unwrap().push_back(tr(Node {
+    	test_id: 3,
+    	is_goal: false,
+    }));
+
+    //let children_iter = iter.peek().unwrap().iter_mut().peekable();
+    println!("{}", iter.next().unwrap().data().test_id);
+    println!("{}", iter.next().unwrap().data().test_id);
+    */
+
+    //Testing depth first tree traversal?
+
+    //TODO: Rewrite methods w/ tree library usage
 }
 
 
 
-fn iterative_depth_first_search(root: &Node) -> Option<&Node> {
+/*fn iterative_depth_first_search(root: &Node) -> Option<&Node> {
 	//Search to depths of increasing size
 	for depth in 1..MAX_DEPTH {
 		//Start a search from the root to the given depth
@@ -93,8 +170,8 @@ fn depth_first_search(current_node: &Node, depth: i16) -> (Option<&Node>, bool) 
 		assert!(depth > 0);
 		let nodes_remain = false;
 
-		//Depth remaining, check the child nodes
-		for child in current_node.child_nodes.iter() {
+		//Depth remaining, check the child nodes, if any
+		for child in /*current_node.as_ref().child_nodes.unwrap_or_else(Vec::new).iter()*/ {
 
 			//Recurse down to the next depth
 			let results = depth_first_search(child, depth-1);
@@ -115,7 +192,7 @@ fn depth_first_search(current_node: &Node, depth: i16) -> (Option<&Node>, bool) 
 	}
 
 
-}
+}*/
 
 
 /*

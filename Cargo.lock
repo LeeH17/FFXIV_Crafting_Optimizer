@@ -9,6 +9,6 @@ dependencies = [
 
 [[package]]
 name = "trees"
-version = "0.4.2"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0de5f738ceab88e2491a94ddc33c3feeadfa95fedc60363ef110845df12f3878"
+checksum = "2ad8f79e576c13e2c6d84b02b2db736b8e656ab40c64e04353a603d6656186a3"
