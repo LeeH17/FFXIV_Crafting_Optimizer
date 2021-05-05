@@ -1,101 +1,109 @@
-use std::io::{stdout, BufWriter};
+//use std::ptr;
 
+//Struct representing a node
+struct Node{
+	test_id: i16, //Temporary ID for testing known graphs
+	is_goal: bool,
+	/* FFXIV specific parts, begin with testing IDDFS
+	remaining_durability: i16,
+	remaining_cp: i16,
+	
+	quality_expected: i16,
+	quality_max: i16,
+	quality_min: i16,
+
+	progress_expected: i16,
+	progress_max: i16,
+	progress_min: i16,*/
+
+	child_nodes: Vec<Node>,
+}
+
+impl PartialEq for Node {
+	fn eq(&self, other: &Self) -> bool {
+		return self.test_id == other.test_id;
+	}
+}
 
 const MAX_DEPTH: i16 = 300;
+
+/*
+const NULL_NODE: Node = Node{
+	test_id: -1,
+	is_Goal: false,
+	child_nodes: vec![],
+};*/
 
 
 fn main() {
     println!("Hello, world!");
-
-    let stdout = stdout();
-    let message = String::from("Begin crafting optimization?");
-    let width = message.chars().count();
-
-    //let mut writer = BufWriter::new(stdout.lock());
-    //say(message.as_bytes(), width, &mut writer).unwrap();
-    println!("{}",message);
-}
-
-
-//Struct representing a node
-struct Node{
-	test_ID: i16, //Temporary ID for testing known graphs
-	is_Goal: bool,
-	/* FFXIV specific parts, begin with testing IDDFS
-	remaining_Durability: i16,
-	remaining_CP: i16,
-	
-	quality_Expected: i16,
-	quality_Max: i16,
-	quality_Min: i16,
-
-	progress_Expected: i16,
-	progress_Max: i16,
-	progress_Min: i16,*/
-
-	child_Nodes: Vec<Node>,
 }
 
 
 
-fn IterativeDepthFirstSearch(root: Node) {
+fn iterative_depth_first_search(root: &Node) -> Option<&Node> {
 	//Search to depths of increasing size
-	for depth in 1...MAX_DEPTH {
+	for depth in 1..MAX_DEPTH {
 		//Start a search from the root to the given depth
 		//Get tuple telling us if there are remaining deeper nodes and returning any found nodes.
 
-		(found_Node, nodes_Remaining) = DepthFirstSearch(root, depth);
+		//Expecting tuple with 
+		let results:(Option<&Node>, bool) = depth_first_search(root, depth);
 
 
-		if found_Node != null {
-			return found_Node;
+		if results.0 != None {
+			return results.0;
 			/*
 			TODO: Update this so instead of returning first success node and stopping, instead
 				display the found crafting path and continue searching for better ones
+				Also collect path taken to get here
 			*/
 
-		} else if nodes_Remaining == false {
+		} else if results.1 == false {
 			//Searched through entire tree, failed to find successful path
-			return NULL;
+			return None;
 		}
 
 	}
 
+	return None; //Failed to find (?), returning null node
+
 }
 
 //Depth limited search for directed graphs
-fn DepthFirstSearch(current_Node: Node, depth: i16){
+fn depth_first_search(current_node: &Node, depth: i16) -> (Option<&Node>, bool) {
 	if depth == 0 {
 		//We've hit max depth for this iteration, treat as leaf node
-		if current_Node.is_Goal {
-			return (current_Node, TRUE);
+		if current_node.is_goal {
+			return (Some(current_node), true);
 		} else {
 			//There are still remaining children potentially, but they
 			//  will be visited in the next iteration with higher depth
-			return (NULL, TRUE);
+			return (None, true);
 		}
 
-	} else if depth > 0 {
-		let nodes_Remain = FALSE;
+	} else {//if depth > 0 {
+		assert!(depth > 0);
+		let nodes_remain = false;
 
 		//Depth remaining, check the child nodes
-		for child in current_Node.child_Nodes.iter() {
+		for child in current_node.child_nodes.iter() {
 
 			//Recurse down to the next depth
-			(found_Node, nodes_Remaining) = DepthFirstSearch(child, depth-1);
+			let results = depth_first_search(child, depth-1);
 
-			if found != NULL {
+			if results.0 != None {
 				//We found the goal node, but there are still nodes we haven't checked
-				return (found_Node, TRUE);
+				return (results.0, true);
 
-			} else if nodes_Remaining {
+			} else if results.1 {
 				//Haven't found the node, but there are still nodes we haven't checked
-				nodes_Remain = TRUE;
+				let nodes_remain = true;
 			}
 		}
 
 		//We didn't find the goal node, return whether any nodes remain as well.
-		return (NULL, nodes_Remain);
+		return (None, nodes_remain);
 
 	}
 
@@ -105,7 +113,7 @@ fn DepthFirstSearch(current_Node: Node, depth: i16){
 
 /*
 
-IDFFS example from wikipedia
+IDFFS recreted by referencing wikipedia
 First papers on this algorithm by Richard E Korf (1985), "Depth-first iterative deepening"
 https://en.wikipedia.org/wiki/Iterative_deepening_depth-first_search
 
