@@ -1,4 +1,11 @@
+//Temporary warning disables for development
+#![allow(non_snake_case)]
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
+
 //use std::ptr;
+use trees::tr;
 
 //Struct representing a node
 struct Node{
