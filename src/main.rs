@@ -87,22 +87,29 @@ fn main() {
     let mut iter = nodes.iter_mut().peekable();
 
     loop {
-
     	let current = iter.next();
-
     	if current == None {
+    		//Stop when there are no more child nodes
     		break;
     	}
+    	//Might be just a worse version of a for loop? TODO check
 
     	let mut current_data = current.unwrap();
 
-    	println!("{}", current_data.data().test_id);
+    	let current_id = current_data.data().test_id;
+    	println!("\n{}", current_id);
 
     	current_data.push_back(tr(Node {
-    		test_id: 3,
+    		test_id: current_id + 1,
     		is_goal: false
     	}));
+
+    	let mut child_iter = current_data.iter_mut().peekable();
+    	println!("{}", child_iter.next().unwrap().data().test_id);
+    	//Once tree is built, this is equivalent of going down in depth, move to functions
     }
+
+//println!("{}", nodes.to_string());
 
     println!("\nEND\n");
 
