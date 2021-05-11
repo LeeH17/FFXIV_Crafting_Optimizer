@@ -5,10 +5,10 @@
 
 
 //use std::ptr;
-use trees::{tr, TreeWalk};
+use trees::{tr, Node};
 
 //Struct representing a node
-struct Node{
+struct CraftingNode{
 	test_id: i16, //Temporary ID for testing known graphs
 	is_goal: bool,
 	/* FFXIV specific parts, begin with testing IDDFS
@@ -26,7 +26,7 @@ struct Node{
 	//child_nodes: Option<Vec<Node>>,
 }
 
-impl PartialEq for Node {
+impl PartialEq for CraftingNode {
 	fn eq(&self, other: &Self) -> bool {
 		return self.test_id == other.test_id;
 	}
@@ -41,7 +41,9 @@ const NULL_NODE: Node = Node{
 	child_nodes: vec![],
 };*/
 
-fn make_node(traits: &[i16]) -> Node {
+
+// parent.push_back(tr(new_node from this))
+fn make_node(traits: &[i16]) -> trees::Tree<CraftingNode> {
 
 	//Calculate if goal or not
 	let progress = traits[8];
@@ -50,14 +52,15 @@ fn make_node(traits: &[i16]) -> Node {
 		item_complete = true;
 	}
 
-	let new_node = Node {
+	let new_node = CraftingNode {
 		test_id: traits[0],
 		is_goal: item_complete,
 	};
 
-	return new_node;
+	return tr(new_node);
 
 }
+
 
 
 fn main() {
@@ -71,19 +74,19 @@ fn main() {
 
 
     //Set up a node
-    let mut nodes = tr(Node {
+    let mut nodes = tr(CraftingNode {
     	test_id: 0,
     	is_goal: false,
     	//child_nodes: None,
     });
 
-    nodes.push_back(tr(Node {
+    nodes.push_back(tr(CraftingNode {
     	test_id: 1,
     	is_goal: false,
     	//child_nodes: None,
     }));
 
-    nodes.push_back(tr(Node {
+    nodes.push_back(tr(CraftingNode {
     	test_id: 2,
     	is_goal: false,
     	//child_nodes: None,
@@ -102,28 +105,21 @@ fn main() {
 
     //let mut walk = TreeWalk::from( nodes );
 
-    let mut iter = nodes.iter_mut().peekable();
+    //let mut iter = nodes.iter_mut().peekable();
 
-    loop {
-    	let current = iter.next();
-    	if current == None {
-    		//Stop when there are no more child nodes
-    		break;
-    	}
-    	//Might be just a worse version of a for loop? TODO check
+    for mut current in nodes.iter_mut() {
+    
+		let current_data = current.data();
 
-    	let mut current_data = current.unwrap();
-
-    	let current_id = current_data.data().test_id;
+    	let current_id = current_data.test_id;
     	println!("\n{}", current_id);
 
-    	current_data.push_back(tr(Node {
+    	current.push_back(tr(CraftingNode {
     		test_id: current_id + 1,
     		is_goal: false
     	}));
 
-    	let mut child_iter = current_data.iter_mut().peekable();
-    	println!("{}", child_iter.next().unwrap().data().test_id);
+    	let child_iter = current.iter_mut();
     	//Once tree is built, this is equivalent of going down in depth, move to functions
     }
 
