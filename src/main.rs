@@ -8,9 +8,13 @@
 use trees::{tr, Node};
 
 //Struct representing a node
+#[derive(Copy, Clone)]
 struct CraftingNode{
 	test_id: i16, //Temporary ID for testing known graphs
 	is_goal: bool,
+	progress: i16, //Simplified values
+	quality: i16,
+	durability: i16,
 	/* FFXIV specific parts, begin with testing IDDFS
 	remaining_durability: i16,
 	remaining_cp: i16,
@@ -24,6 +28,7 @@ struct CraftingNode{
 	progress_min: i16,*/
 
 	//child_nodes: Option<Vec<Node>>,
+
 }
 
 impl PartialEq for CraftingNode {
@@ -34,19 +39,11 @@ impl PartialEq for CraftingNode {
 
 const MAX_DEPTH: i16 = 300;
 
-/*
-const NULL_NODE: Node = Node{
-	test_id: -1,
-	is_goal: false,
-	child_nodes: vec![],
-};*/
-
-
 // parent.push_back(tr(new_node from this))
-fn make_node(traits: &[i16]) -> trees::Tree<CraftingNode> {
+fn make_node(traits: [i16; 4]) -> trees::Tree<CraftingNode> {
 
 	//Calculate if goal or not
-	let progress = traits[8];
+	let progress = traits[1];
 	let mut item_complete = false;
 	if progress >= 100 {
 		item_complete = true;
@@ -55,12 +52,50 @@ fn make_node(traits: &[i16]) -> trees::Tree<CraftingNode> {
 	let new_node = CraftingNode {
 		test_id: traits[0],
 		is_goal: item_complete,
+		progress: traits[1],
+		quality: traits[2],
+		durability: traits[3],
 	};
 
 	return tr(new_node);
-
 }
 
+
+//Replace with struct/according to struct or something?
+fn synthesis(old: &CraftingNode) -> trees::Tree<CraftingNode> {
+	return make_node([old.test_id*2,
+		old.progress + 20,
+		old.quality,
+		old.durability - 10]);
+}
+
+fn touch(old: &CraftingNode) -> trees::Tree<CraftingNode> {
+	return make_node([old.test_id*2,
+		old.progress,
+		old.quality + 30,
+		old.durability - 10]);
+}
+
+
+fn generate_children(root: &mut Node<CraftingNode>) {
+
+	for mut current in root.iter_mut() {
+    
+		let current_data = current.data().clone();
+
+		let current_id = current_data.test_id;
+    	println!("\n{}", current_id);
+
+    	//children nodes according to action types
+    	if current_data.durability > 10 {
+	    	current.push_back(touch(&current_data));
+			current.push_back(synthesis(&current_data));	
+    	}
+
+    	let child_iter = current.iter_mut();
+    	//Once tree is built, this is equivalent of going down in depth, move to functions
+    }
+}
 
 
 fn main() {
@@ -68,80 +103,23 @@ fn main() {
     println!("Run Start");
     println!("-------------\n");
 
-    //Testing tree setup and printing
-    let forest = tr(0) /-(tr(1) /tr(2)/tr(3) ) /-( tr(4) /tr(5)/tr(6));
-    println!("{}", forest.to_string());
-
-
-    //Set up a node
-    let mut nodes = tr(CraftingNode {
+    //First, build up the tree
+    //Set up the root
+    let mut root = tr(CraftingNode {
     	test_id: 0,
     	is_goal: false,
-    	//child_nodes: None,
+    	progress: 0,
+    	quality: 0,
+    	durability: 40,
     });
 
-    nodes.push_back(tr(CraftingNode {
-    	test_id: 1,
-    	is_goal: false,
-    	//child_nodes: None,
-    }));
-
-    nodes.push_back(tr(CraftingNode {
-    	test_id: 2,
-    	is_goal: false,
-    	//child_nodes: None,
-    }));
-
-    //println!("{}", nodes.data().test_id);
-    /*let mut iter = nodes.iter_mut();
+    generate_children(&mut root);
     
-    iter.next().unwrap().push_back(tr(Node {
-    	test_id: 3,
-    	is_goal: false,
-    	//child_nodes: None,
-    })); */
 
-    //println!("{}", nodes.to_string());
+    //Now can do IDDFS over the tree
 
-    //let mut walk = TreeWalk::from( nodes );
-
-    //let mut iter = nodes.iter_mut().peekable();
-
-    for mut current in nodes.iter_mut() {
-    
-		let current_data = current.data();
-
-    	let current_id = current_data.test_id;
-    	println!("\n{}", current_id);
-
-    	current.push_back(tr(CraftingNode {
-    		test_id: current_id + 1,
-    		is_goal: false
-    	}));
-
-    	let child_iter = current.iter_mut();
-    	//Once tree is built, this is equivalent of going down in depth, move to functions
-    }
-
-//println!("{}", nodes.to_string());
 
     println!("\nEND\n");
-
-    /*
-    println!("{}", iter.peek().unwrap().data().test_id);
-    iter.next().unwrap().push_back(tr(Node {
-    	test_id: 3,
-    	is_goal: false,
-    }));
-
-    //let children_iter = iter.peek().unwrap().iter_mut().peekable();
-    println!("{}", iter.next().unwrap().data().test_id);
-    println!("{}", iter.next().unwrap().data().test_id);
-    */
-
-    //Testing depth first tree traversal?
-
-    //TODO: Rewrite methods w/ tree library usage
 }
 
 
