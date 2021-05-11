@@ -41,6 +41,24 @@ const NULL_NODE: Node = Node{
 	child_nodes: vec![],
 };*/
 
+fn make_node(traits: &[i16]) -> Node {
+
+	//Calculate if goal or not
+	let progress = traits[8];
+	let mut item_complete = false;
+	if progress >= 100 {
+		item_complete = true;
+	}
+
+	let new_node = Node {
+		test_id: traits[0],
+		is_goal: item_complete,
+	};
+
+	return new_node;
+
+}
+
 
 fn main() {
     println!("\n-------------");
